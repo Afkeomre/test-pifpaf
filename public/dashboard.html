@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Мой кабинет — PifPaf Bloggers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💜</text></svg>" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a href="/" class="brand">
+        <span class="brand-logo">✨</span>
+        <span class="brand-pifpaf">PifPaf</span> <span class="grad-text">Bloggers</span>
+      </a>
+      <nav class="topbar-actions" id="nav"></nav>
+    </div>
+  </header>
+
+  <main class="container dash-main">
+    <div class="dash-head">
+      <div>
+        <h1 id="greeting">Мой кабинет</h1>
+        <p id="subtitle" class="auth-sub" style="text-align:left;">Загрузи рилсы и следи за статистикой</p>
+      </div>
+      <div class="dash-actions">
+        <button class="btn btn-ghost" id="btn-refresh">⟳ Обновить статистику</button>
+        <button class="btn btn-primary" id="btn-add">+ Добавить рилс</button>
+      </div>
+    </div>
+
+    <section class="grid-stats" id="stat-cards"></section>
+
+    <section class="grid-2" style="margin-top:16px;">
+      <div class="panel">
+        <h3>Просмотры по дням</h3>
+        <div class="chart-box"><canvas class="chart" id="chart-daily"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Мои рилсы</h3>
+        <div id="mini-list" class="loader" style="padding:20px 0;"><div class="spinner"></div></div>
+      </div>
+    </section>
+
+    <section style="margin-top:16px;">
+      <div class="panel">
+        <h3 style="display:flex;align-items:center;justify-content:space-between;">
+          Все рилсы
+          <span class="chapter-hint" style="font-size:12.5px;font-weight:400;color:var(--muted-fg)" id="my-count"></span>
+        </h3>
+        <div class="table-scroll">
+          <table class="reel-table" id="reel-table">
+            <thead>
+              <tr><th></th><th>Видео</th><th>Подпись</th><th>Просмотры</th><th>Лайки</th><th>Комменты</th><th>Дата</th><th></th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Модалка добавления рилса -->
+  <div class="modal-backdrop" id="add-modal">
+    <div class="modal">
+      <button class="close-x" data-close>✕</button>
+      <h2>Добавить рилс</h2>
+      <div class="tabs">
+        <button class="tab active" data-tab="link">По ссылке</button>
+        <button class="tab" data-tab="profile">По нику</button>
+      </div>
+
+      <div class="tab-pane" id="pane-link">
+        <div class="field">
+          <label for="reel_url">Ссылка на рилс</label>
+          <input id="reel_url" type="url" placeholder="https://www.instagram.com/reel/…" />
+        </div>
+        <div class="field">
+          <label for="reel_urls">Или несколько — по одной в строки</label>
+          <textarea id="reel_urls" rows="4" style="width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:14px;background:var(--bg-soft);font-family:inherit;font-size:14px;" placeholder="https://…&#10;https://…"></textarea>
+        </div>
+        <button class="btn btn-primary btn-block" id="btn-add-links">Подтянуть данные</button>
+      </div>
+
+      <div class="tab-pane" id="pane-profile" style="display:none;">
+        <div class="field">
+          <label for="profile_nick">Instagram-ник блоггера</label>
+          <input id="profile_nick" type="text" placeholder="@you_blog" autocapitalize="none" />
+        </div>
+        <button class="btn btn-primary btn-block" id="btn-add-profile">Подтянуть последние рилсы</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/chart.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

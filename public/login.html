@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Вход — PifPaf Bloggers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💜</text></svg>" />
+</head>
+<body>
+  <div class="auth-wrap">
+    <form class="auth-card" id="login-form">
+      <a href="/" class="brand" style="justify-content:center;margin-bottom:6px;">
+        <span class="brand-logo">✨</span> <span class="brand-pifpaf">PifPaf</span> Bloggers
+      </a>
+      <h1>С возвращением</h1>
+      <p class="auth-sub">Войди в свой кабинет блоггера</p>
+
+      <div class="form-error" id="form-error"></div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@example.com" />
+      </div>
+      <div class="field">
+        <label for="password">Пароль</label>
+        <input id="password" name="password" type="password" required autocomplete="current-password" placeholder="••••••••" />
+      </div>
+
+      <button class="btn btn-primary btn-block" type="submit" id="submit">Войти</button>
+
+      <p class="form-foot">Нет аккаунта? <a href="/register.html">Зарегистрируйся</a></p>
+      <p class="form-foot" style="font-size:12.5px;">Демо-доступ: alina@demo.ru / demo1234</p>
+    </form>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+</body>
+</html>

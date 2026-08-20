@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Лента рилсов — PifPaf Bloggers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💜</text></svg>" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a href="/" class="brand">
+        <span class="brand-logo">✨</span>
+        <span class="brand-pifpaf">PifPaf</span> <span class="grad-text">Bloggers</span>
+      </a>
+      <nav class="topbar-actions" id="nav"></nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1>Лента рилсов <span class="grad-text">блоггеров PifPaf</span></h1>
+      <p>Просмотры, обложки и даты подтягиваются из Instagram автоматически.</p>
+      <div class="stats" id="hero-stats"></div>
+    </section>
+
+    <div class="chips" id="chips"></div>
+
+    <section class="feed" id="feed">
+      <div class="loader"><div class="spinner"></div>Загружаем рилсы…</div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/feed.js"></script>
+</body>
+</html>

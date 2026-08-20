@@ -1,0 +1,22 @@
+{
+  "name": "pifpaf-bloggers-dashboard",
+  "version": "1.0.0",
+  "description": "Дашборд для внутренних блоггеров PifPaf: лента рилсов, автоподтяжка из Instagram (Apify), личные кабинеты с аналитикой.",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "seed": "node server/seed.js",
+    "smoke": "node server/scripts/smoke-apify.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.8.1",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

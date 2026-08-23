@@ -11,6 +11,9 @@
   "keywords": [],
   "author": "",
   "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22"
+  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "better-sqlite3": "^11.8.1",

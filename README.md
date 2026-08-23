@@ -18,8 +18,10 @@ Node.js 22 · Express 4 · better-sqlite3 (SQL) · vanilla JS + HTML/CSS · canv
 ```bash
 npm install
 npm start            # → http://localhost:3000
-npm run seed         # демо-данные (по желанию, перезатирает @demo.ru)
+npm run seed         # демо-данные (по желанию; при пустой базе сеются автоматически)
 ```
+
+Деплой на Render (бесплатный тариф): см. [DEPLOY.md](DEPLOY.md).
 
 ### Демо-доступ
 `alina@demo.ru` / `demo1234` (и любые `*@demo.ru` из seed).

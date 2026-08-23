@@ -5,6 +5,16 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const db = require('./db');
+const { seedDemo } = require('./seed');
+
+// На бесплатных хостингах (Render Free) диск эфемерный: после сна/редеплоя
+// база пустая — сеем демо-данные, чтобы сайт сразу выглядел живым.
+const userCount = db.prepare('SELECT COUNT(*) AS n FROM users').get().n;
+if (!userCount) {
+  console.log('База пустая — сею демо-данные…');
+  seedDemo();
+}
+
 const authRoutes = require('./routes/auth');
 const reelsRoutes = require('./routes/reels');
 const analyticsRoutes = require('./routes/analytics');

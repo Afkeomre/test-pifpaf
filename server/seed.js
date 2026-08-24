@@ -1,6 +1,8 @@
 // Демо-данные: мок-блоггеры и мок-рилсы.
 // Никакие реальные аккаунты не используются — всё синтетическое.
 
+const fs = require('fs');
+const path = require('path');
 const bcrypt = require('bcryptjs');
 const db = require('./db');
 
@@ -33,13 +35,27 @@ function rng(seed) {
 
 const hash = bcrypt.hashSync('demo1234', 10);
 
+const AVATARS_DIR = path.join(__dirname, '..', 'public', 'uploads', 'avatars');
+
+function clearUploadedAvatars() {
+  try {
+    for (const f of fs.readdirSync(AVATARS_DIR)) fs.unlinkSync(path.join(AVATARS_DIR, f));
+  } catch {}
+}
+
 function seedDemo() {
   console.log('Сею демо-данные…');
 
   db.prepare('DELETE FROM reel_snapshots').run();
   db.prepare('DELETE FROM reels').run();
-  const existing = db.prepare('SELECT id FROM users WHERE email LIKE ?').get('%@demo.ru');
-  if (existing) db.prepare('DELETE FROM users WHERE email LIKE ?').run('%@demo.ru');
+  if (process.env.WIPE_ALL === '1') {
+    db.prepare('DELETE FROM users').run();
+    clearUploadedAvatars();
+    console.log('WIPE_ALL=1: удалены все пользователи и загруженные аватарки.');
+  } else {
+    const existing = db.prepare('SELECT id FROM users WHERE email LIKE ?').get('%@demo.ru');
+    if (existing) db.prepare('DELETE FROM users WHERE email LIKE ?').run('%@demo.ru');
+  }
 
   let insertCount = 0;
   const insUser = db.prepare('INSERT INTO users (name, email, password_hash, ig_username, avatar_url) VALUES (?,?,?,?,?)');

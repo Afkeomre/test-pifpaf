@@ -1,12 +1,39 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const path = require('path');
+const multer = require('multer');
 const db = require('../db');
 
 const router = express.Router();
 const SECRET = process.env.SESSION_SECRET || 'dev-secret-change-me';
 const COOKIE = 'pifpaf_token';
 const MAX_AGE = 7 * 24 * 3600 * 1000;
+
+// Папка для загруженных аватарок (создаётся автоматически)
+const AVATARS_DIR = path.join(__dirname, '..', '..', 'public', 'uploads', 'avatars');
+fs.mkdirSync(AVATARS_DIR, { recursive: true });
+
+const AVATAR_MIME = {
+  'image/jpeg': '.jpg',
+  'image/png': '.png',
+  'image/webp': '.webp',
+  'image/gif': '.gif',
+};
+
+const uploadAvatar = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, AVATARS_DIR),
+    filename: (req, file, cb) =>
+      cb(null, `u${req.user.id}-${Date.now()}${AVATAR_MIME[file.mimetype] || ''}`),
+  }),
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2 МБ
+  fileFilter: (_req, file, cb) => {
+    if (AVATAR_MIME[file.mimetype]) return cb(null, true);
+    cb(new Error('Только JPG, PNG, WebP или GIF'));
+  },
+});
 
 function sign(user) {
   return jwt.sign({ id: user.id, email: user.email, name: user.name }, SECRET, { expiresIn: '7d' });
@@ -71,10 +98,7 @@ router.post('/logout', (req, res) => {
   res.json({ ok: true });
 });
 
-module.exports = router;
-module.exports.COOKIE = COOKIE;
-module.exports.SECRET = SECRET;
-module.exports.ME = (req, res, next) => {
+const ME = (req, res, next) => {
   const token = req.cookies[COOKIE];
   if (!token) return res.status(401).json({ error: 'Не авторизован' });
   try {
@@ -87,3 +111,34 @@ module.exports.ME = (req, res, next) => {
     return res.status(401).json({ error: 'Сессия истекла' });
   }
 };
+
+function deleteLocalAvatar(url) {
+  if (url && url.startsWith('/uploads/avatars/')) {
+    fs.unlink(path.join(__dirname, '..', '..', 'public', url), () => {});
+  }
+}
+
+// Загрузка своей аватарки
+router.post('/avatar', ME, (req, res) => {
+  uploadAvatar.single('avatar')(req, res, (err) => {
+    if (err) return res.status(400).json({ error: err.message });
+    if (!req.file) return res.status(400).json({ error: 'Файл не получен' });
+    const url = `/uploads/avatars/${req.file.filename}`;
+    deleteLocalAvatar(req.user.avatar_url);
+    db.prepare('UPDATE users SET avatar_url = ? WHERE id = ?').run(url, req.user.id);
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.id);
+    res.json({ user: publicUser(user), avatar_url: url });
+  });
+});
+
+// Сброс аватарки — вернуть инициалы
+router.delete('/avatar', ME, (req, res) => {
+  deleteLocalAvatar(req.user.avatar_url);
+  db.prepare('UPDATE users SET avatar_url = NULL WHERE id = ?').run(req.user.id);
+  res.json({ user: publicUser({ ...req.user, avatar_url: null }) });
+});
+
+module.exports = router;
+module.exports.COOKIE = COOKIE;
+module.exports.SECRET = SECRET;
+module.exports.ME = ME;

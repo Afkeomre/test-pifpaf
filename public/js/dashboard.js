@@ -29,7 +29,7 @@ function statsCards(a) {
       <div class="icon-bg">${i.play}</div>
       <div class="label">Рилсов</div>
       <div class="value">${a.totals.reels}</div>
-      <div class="hint">среднее ${fmtNum(avg)} ${plural(avg, ['просмотр', 'просмотра', 'просмотров'])}</div>
+      <div class="hint">среднее ${fmtNum(avg)} ${pluralFmt(avg, ['просмотр', 'просмотра', 'просмотров'])}</div>
     </div>
     <div class="stat-card ${gainPositive ? 'up' : ''}">
       <div class="icon-bg">${i.heart}</div>
@@ -46,7 +46,7 @@ function renderTable(reels, tbody) {
   }
   tbody.innerHTML = reels.map(r => `
     <tr>
-      <td><img class="thumb" src="${escapeHtml(r.cover_url)}" alt="" onerror="this.style.visibility='hidden'" /></td>
+      <td><img class="thumb" src="${escapeHtml(r.cover_url)}" alt="" onerror="coverError(this)" /></td>
       <td><a href="${escapeHtml(r.ig_url)}" target="_blank" rel="noopener" style="font-weight:700">@${escapeHtml(r.ig_username || r.owner_username || 'reel')}</a></td>
       <td><div class="reel-caption">${escapeHtml(r.caption)}</div></td>
       <td data-label="Просмотры"><b style="color:var(--accent)">${fmtNum(r.views)}</b></td>
@@ -79,7 +79,7 @@ function renderMini(list, box) {
   box.innerHTML = top3.map((r, idx) => `
     <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--muted)">
       <span style="font-family:var(--font-head);font-weight:700;color:var(--fg-muted);width:20px">${idx + 1}</span>
-      <img style="width:38px;height:38px;border-radius:10px;object-fit:cover" src="${escapeHtml(r.cover_url)}" alt="" />
+      <img style="width:38px;height:38px;border-radius:10px;object-fit:cover" src="${escapeHtml(r.cover_url)}" alt="" onerror="coverError(this)" />
       <div style="flex:1;min-width:0">
         <div class="reel-caption" style="-webkit-line-clamp:1">${escapeHtml(r.caption)}</div>
         <div style="font-size:12px;color:var(--muted-fg)">${timeAgo(r.posted_at)}</div>
@@ -151,10 +151,31 @@ async function loadAll() {
     <a class="topbar-link" href="/">Лента</a>
     <a class="topbar-link active" href="/dashboard.html">Мой кабинет</a>
     <span class="user-chip">
-      <img src="${escapeHtml(user.avatar_url || '')}" alt="" onerror="this.style.visibility='hidden'" />
+      <span class="avatar-wrap" id="avatar-wrap" title="Сменить аватар">
+        ${avatarHTML(user.name, user.avatar_url)}
+        <input type="file" id="avatar-input" accept="image/jpeg,image/png,image/webp,image/gif" hidden />
+      </span>
       <span class="name">${escapeHtml(user.name)}</span>
       <button class="btn btn-ghost btn-small" id="logout" title="Выйти">${i.logout} Выйти</button>
     </span>`;
+
+  const avatarWrap = document.getElementById('avatar-wrap');
+  document.getElementById('avatar-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const fd = new FormData();
+    fd.append('avatar', file);
+    try {
+      const res = await api('/api/auth/avatar', { method: 'POST', body: fd });
+      user.avatar_url = res.user.avatar_url;
+      avatarWrap.querySelector('img, .avatar-fallback').outerHTML =
+        avatarHTML(user.name, user.avatar_url);
+      toast('Аватарка обновлена');
+    } catch (err) { toast(err.message, true); }
+    e.target.value = '';
+  });
+  avatarWrap.addEventListener('click', () =>
+    avatarWrap.querySelector('#avatar-input').click());
   document.getElementById('logout').addEventListener('click', async () => {
     await api('/api/auth/logout', { method: 'POST' });
     location.href = '/login.html';

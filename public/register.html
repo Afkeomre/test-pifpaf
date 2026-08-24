@@ -19,6 +19,13 @@
       <h1>Создай кабинет</h1>
       <p class="auth-sub">Покажи свои рилсы и аналитику в красивом виде</p>
 
+      <div class="avatar-pick" id="avatar-pick" title="Загрузить аватарку">
+        <span class="avatar-fallback" id="avatar-ph">?</span>
+        <img id="avatar-preview" alt="Превью аватарки" hidden />
+      </div>
+      <p class="avatar-hint" id="avatar-hint">нажми на кружок, чтобы добавить фото</p>
+      <input type="file" id="avatar" accept="image/jpeg,image/png,image/webp,image/gif" hidden />
+
       <div class="form-error" id="form-error"></div>
 
       <div class="field">

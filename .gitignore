@@ -7,3 +7,4 @@ node_modules/
 *.sqlite3
 npm-debug.log*
 *.log
+public/uploads/

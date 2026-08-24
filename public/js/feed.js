@@ -10,13 +10,13 @@ function cardHTML(r) {
   <article class="reel-card">
     <div class="reel-cover">
       <a href="${escapeHtml(r.ig_url)}" target="_blank" rel="noopener">
-        <img src="${escapeHtml(r.cover_url)}" alt="Обложка рилса" loading="lazy" />
+        <img src="${escapeHtml(r.cover_url)}" alt="Обложка рилса" loading="lazy" onerror="coverError(this)" />
         <span class="views-badge">${i.play} ${fmtNum(r.views)}</span>
       </a>
     </div>
     <div class="reel-body">
       <div class="reel-author">
-        <img src="${escapeHtml(r.avatar_url || '')}" alt="" onerror="this.style.visibility='hidden'" />
+        ${avatarHTML(r.user_name || r.owner_username || r.ig_username, r.avatar_url)}
         <div>
           <div class="who">${escapeHtml(r.user_name || r.owner_username || r.ig_username)}</div>
           <div class="date">${timeAgo(r.posted_at)} · ${fmtDate(r.posted_at)}</div>
@@ -71,9 +71,9 @@ function renderStats(overview) {
   const nLikes = overview.totals.likes;
   el.innerHTML = `
     <div class="stat-mini"><b>${nBloggers}</b><span>${plural(nBloggers, ['блоггер', 'блоггера', 'блоггеров'])}</span></div>
-    <div class="stat-mini"><b>${fmtNum(nReels)}</b><span>${plural(nReels, ['рилс', 'рилса', 'рилсов'])}</span></div>
-    <div class="stat-mini"><b>${fmtNum(nViews)}</b><span>${plural(nViews, ['просмотр', 'просмотра', 'просмотров'])}</span></div>
-    <div class="stat-mini"><b>${fmtNum(nLikes)}</b><span>${plural(nLikes, ['лайк', 'лайка', 'лайков'])}</span></div>`;
+    <div class="stat-mini"><b>${fmtNum(nReels)}</b><span>${pluralFmt(nReels, ['рилс', 'рилса', 'рилсов'])}</span></div>
+    <div class="stat-mini"><b>${fmtNum(nViews)}</b><span>${pluralFmt(nViews, ['просмотр', 'просмотра', 'просмотров'])}</span></div>
+    <div class="stat-mini"><b>${fmtNum(nLikes)}</b><span>${pluralFmt(nLikes, ['лайк', 'лайка', 'лайков'])}</span></div>`;
 }
 
 function renderNav(user) {
@@ -83,7 +83,7 @@ function renderNav(user) {
       <a class="topbar-link active" href="/">Лента</a>
       <a class="topbar-link" href="/dashboard.html">Мой кабинет</a>
       <span class="user-chip">
-        <img src="${escapeHtml(user.avatar_url || '')}" alt="" onerror="this.style.visibility='hidden'" />
+        ${avatarHTML(user.name, user.avatar_url)}
         <span class="name">${escapeHtml(user.name)}</span>
         <button class="btn btn-ghost btn-small" id="logout" title="Выйти">${icons().logout} Выйти</button>
       </span>`;

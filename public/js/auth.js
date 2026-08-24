@@ -12,6 +12,27 @@ function showError(msg) {
 
 function clearError() { errorBox.classList.remove('show'); }
 
+// Пикер аватарки на странице регистрации
+let avatarFile = null;
+const pick = document.getElementById('avatar-pick');
+if (pick) {
+  const input = document.getElementById('avatar');
+  const preview = document.getElementById('avatar-preview');
+  const ph = document.getElementById('avatar-ph');
+  const hint = document.getElementById('avatar-hint');
+  pick.addEventListener('click', () => input.click());
+  input.addEventListener('change', () => {
+    avatarFile = input.files[0] || null;
+    if (!avatarFile) return;
+    preview.src = URL.createObjectURL(avatarFile);
+    preview.hidden = false;
+    ph.hidden = true;
+    hint.textContent = avatarFile.name.length > 28
+      ? avatarFile.name.slice(0, 25) + '…'
+      : avatarFile.name;
+  });
+}
+
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   clearError();
@@ -34,6 +55,13 @@ form.addEventListener('submit', async (e) => {
   submitBtn.textContent = isRegister ? 'Создаём…' : 'Входим…';
   try {
     await api(`/api/auth/${isRegister ? 'register' : 'login'}`, { method: 'POST', body });
+    if (isRegister && avatarFile) {
+      submitBtn.textContent = 'Загружаем фото…';
+      const fd = new FormData();
+      fd.append('avatar', avatarFile);
+      try { await api('/api/auth/avatar', { method: 'POST', body: fd }); }
+      catch { /* кабинет уже создан — аватарка не критична */ }
+    }
     location.href = '/dashboard.html';
   } catch (err) {
     showError(err.message);

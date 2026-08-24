@@ -31,7 +31,7 @@ server/
   seed.js             # демо-данные (мок-блоггеры)
   scripts/smoke-apify.js  # разовая проверка связи с Apify
   routes/
-    auth.js           # register/login/logout/me + middleware ME
+    auth.js           # register/login/logout/me + middleware ME, POST/DELETE /avatar (multer)
     reels.js          # CRUD рилсов, add/sync-profile/refresh
     analytics.js      # overview, me, reel/:id
 public/

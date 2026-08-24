@@ -24,19 +24,29 @@ function shortcodeFromUrl(url) {
   return m ? m[1] : null;
 }
 
+// Дата из обоих форматов: ISO-строка или unix-секунды
+function toDate(iso) {
+  if (!iso) return null;
+  const d = typeof iso === 'number' ? new Date(iso * 1000) : new Date(iso);
+  return isNaN(d.getTime()) ? null : d.toISOString();
+}
+
 function normalizeItem(item) {
-  const url = item.url || item.inputUrl || item.postUrl || '';
+  const url = item.url || item.inputUrl || item.postUrl || item.reel_url || '';
+  const owner = item.ownerUsername || item.owner || item.user?.username || '';
   return {
     ig_url: url,
-    shortcode: item.shortCode || shortcodeFromUrl(url),
-    owner_username: (item.ownerUsername || item.owner || '').replace(/^@/, ''),
-    cover_url: item.displayUrl || item.coverImageUrl || item.imageUrl || '',
-    video_url: item.videoUrl || item.downloadUrl || '',
+    shortcode: item.shortCode || item.shortcode || shortcodeFromUrl(url),
+    owner_username: String(owner).replace(/^@/, ''),
+    // обложка: link-актор -> displayUrl, профильный -> image
+    cover_url: item.displayUrl || item.coverImageUrl || item.imageUrl || item.image || item.thumbnail_url || '',
+    video_url: item.videoUrl || item.video_url || item.downloadUrl || '',
     caption: (item.caption || item.text || '').toString().slice(0, 2000),
-    views: Number(item.videoPlayCount ?? item.videoViewCount ?? item.viewCount ?? item.views ?? 0),
-    likes: Number(item.likesCount ?? item.likeCount ?? item.likes ?? 0),
-    comments: Number(item.commentsCount ?? item.commentCount ?? item.comments ?? 0),
-    posted_at: item.timestamp || item.postedAt || item.date || null,
+    // просмотры: link-актор -> videoPlayCount, профильный -> play_count
+    views: Number(item.videoPlayCount ?? item.play_count ?? item.videoViewCount ?? item.view_count ?? item.viewCount ?? item.views ?? 0),
+    likes: Number(item.likesCount ?? item.like_count ?? item.likeCount ?? item.likes ?? 0),
+    comments: Number(item.commentsCount ?? item.comment_count ?? item.commentCount ?? item.comments ?? 0),
+    posted_at: toDate(item.timestamp || item.taken_at || item.taken_at_timestamp || item.postedAt || item.date),
   };
 }
 
@@ -70,6 +80,8 @@ async function fetchByLinks(links) {
 // Все рилсы профиля (лены у блоггера)
 async function fetchByProfile(username, limit = 12) {
   const clean = String(username).replace(/^@/, '');
+  // актор валидирует ввод: минимум 5 постов за запуск
+  limit = Math.min(24, Math.max(5, Number(limit) || 12));
   if (isMock()) {
     // мок: синтетические релзы блоггера по его нику
     const out = [];

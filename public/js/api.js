@@ -1,10 +1,13 @@
 // Общие утилиты и HTTP-обёртка
 
 async function api(path, opts = {}) {
+  const isForm = opts.body instanceof FormData;
   const res = await fetch(path, {
-    headers: { 'Content-Type': 'application/json' },
     ...opts,
-    body: opts.body ? JSON.stringify(opts.body) : undefined,
+    headers: isForm
+      ? (opts.headers || {})
+      : { 'Content-Type': 'application/json', ...(opts.headers || {}) },
+    body: isForm || !opts.body ? opts.body : JSON.stringify(opts.body),
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || `Ошибка ${res.status}`);
@@ -26,6 +29,15 @@ function plural(n, forms) {
   if (rem > 1 && rem < 5) return forms[1];
   if (rem === 1) return forms[0];
   return forms[2];
+}
+
+// Согласование с тем, как число ПОКАЗЫВАЕТСЯ (fmtNum):
+// «28K»/«1.2M» — всегда род. мн.ч. («28K лайков»), дробные — род. ед.ч. («456.8 просмотра»)
+function pluralFmt(n, forms) {
+  const num = Number(n) || 0;
+  if (Math.abs(num) >= 1000) return forms[2];
+  if (!Number.isInteger(num)) return forms[1];
+  return plural(num, forms);
 }
 
 function fmtDate(iso) {
@@ -68,6 +80,32 @@ function escapeHtml(s) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+// Аватар: картинка, если есть; иначе кружок с инициалами
+function avatarHTML(name, url) {
+  const src = String(url || '').trim();
+  if (src) {
+    return `<img src="${escapeHtml(src)}" alt="" data-fb="${escapeHtml(name || '?')}" onerror="this.outerHTML=avatarFallback(this.dataset.fb)" />`;
+  }
+  return avatarFallback(name);
+}
+
+function avatarFallback(name) {
+  const parts = String(name || '?').trim().split(/\s+/);
+  const initials = ((parts[0] || '')[0] || '?') + ((parts[1] || '')[0] || '');
+  return `<span class="avatar-fallback" aria-hidden="true">${escapeHtml(initials.toUpperCase())}</span>`;
+}
+
+// Заглушка, если обложка не загрузилась (протухла CDN-ссылка и т.п.)
+function coverError(img) {
+  img.onerror = null;
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+    "<svg xmlns='http://www.w3.org/2000/svg' width='540' height='720' viewBox='0 0 540 720'>" +
+    "<rect width='540' height='720' fill='#f1eef5'/>" +
+    "<circle cx='270' cy='360' r='58' fill='#ffffff' opacity='.9'/>" +
+    "<path d='M252 332l62 28-62 28z' fill='#8b5cf6'/></svg>"
+  );
 }
 
 function icons() {

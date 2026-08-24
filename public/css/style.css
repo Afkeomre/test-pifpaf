@@ -48,6 +48,7 @@ body {
 a { color: var(--primary-strong); text-decoration: none; }
 a:hover { text-decoration: underline; }
 img { display: block; max-width: 100%; }
+[hidden] { display: none !important; }
 
 h1, h2, h3, h4 { font-family: var(--font-head); line-height: 1.2; letter-spacing: -0.01em; }
 h1 { font-size: 36px; font-weight: 800; }
@@ -142,6 +143,16 @@ h4 { font-size: 17px; font-weight: 700; }
   width: 32px; height: 32px; border-radius: 50%;
   object-fit: cover;
 }
+.user-chip .avatar-fallback { width: 32px; height: 32px; font-size: 13px; }
+.avatar-wrap {
+  display: inline-flex;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.avatar-wrap:hover img,
+.avatar-wrap:hover .avatar-fallback {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--primary);
+}
 .user-chip .name { font-weight: 700; font-size: 14px; }
 .user-chip #logout {
   display: inline-flex;
@@ -206,6 +217,13 @@ h4 { font-size: 17px; font-weight: 700; }
 .reel-body { padding: 12px 14px 14px; display: flex; flex-direction: column; flex: 1; }
 .reel-author { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .reel-author img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
+.avatar-fallback {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border-radius: 50%; flex: none;
+  background: var(--primary);
+  color: #fff; font-family: var(--font-head); font-weight: 800;
+  font-size: 12px; letter-spacing: 0.02em; user-select: none;
+}
 .reel-author .who { font-weight: 700; font-size: 14px; color: var(--fg); }
 .reel-author .date { font-size: 12.5px; color: var(--muted-fg); }
 .reel-author .demo-tag {
@@ -352,7 +370,8 @@ h4 { font-size: 17px; font-weight: 700; }
 .reel-table td { padding: 10px; border-bottom: 1px solid var(--muted); vertical-align: middle; }
 .reel-table tr:hover td { background: var(--bg-soft); }
 .reel-table .thumb { width: 44px; height: 44px; min-width: 44px; border-radius: 10px; object-fit: cover; }
-.reel-table td:last-child:not(:has(.empty)) { display: flex; align-items: center; justify-content: flex-end; gap: 8px; white-space: nowrap; }
+.reel-table td:last-child:not(:has(.empty)) { text-align: right; white-space: nowrap; }
+.reel-table td:last-child:not(:has(.empty)) .btn + .btn { margin-left: 6px; }
 .trend-up, .trend-down { font-weight: 700; }
 .trend-up { color: #16a34a; }
 
@@ -369,8 +388,41 @@ h4 { font-size: 17px; font-weight: 700; }
   border-radius: var(--radius-xl);
   padding: 36px 32px;
   box-shadow: var(--shadow-lg);
+  overflow-wrap: break-word;
 }
-.auth-card h1 { text-align: center; }
+.auth-card h1 { text-align: center; font-size: clamp(26px, 8vw, 36px); }
+.avatar-pick {
+  position: relative;
+  width: 84px; height: 84px;
+  margin: -6px auto 0;
+  cursor: pointer;
+}
+.avatar-pick .avatar-fallback,
+.avatar-pick img {
+  width: 84px; height: 84px;
+  border-radius: 50%;
+  object-fit: cover;
+  font-size: 30px;
+}
+.avatar-pick::after {
+  content: '+';
+  position: absolute; right: -2px; bottom: -2px;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--primary); color: #fff;
+  font-weight: 800; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid #fff;
+  box-shadow: var(--shadow-sm);
+}
+.avatar-pick:hover .avatar-fallback,
+.avatar-pick:hover img { box-shadow: 0 0 0 3px var(--accent-soft); }
+.avatar-hint {
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--muted-fg);
+  margin: 8px 0 18px;
+}
 .auth-sub { text-align: center; color: var(--muted-fg); margin: 8px 0 22px; font-size: 14.5px; }
 .field { margin-bottom: 16px; }
 .field label { display: block; font-weight: 700; font-size: 13.5px; margin-bottom: 6px; color: var(--fg); }
@@ -540,6 +592,7 @@ canvas.chart { width: 100%; height: 100%; display: block; }
   .user-chip .name { display: none; }
   .user-chip { padding: 4px 5px 4px 6px; }
   .user-chip img { width: 30px; height: 30px; }
+  .user-chip .avatar-fallback { width: 30px; height: 30px; font-size: 12px; }
   .user-chip #logout { padding: 6px 10px; }
   .hero { padding: 26px 0 2px; }
   .hero h1 { font-size: 26px; }
@@ -563,6 +616,7 @@ canvas.chart { width: 100%; height: 100%; display: block; }
 
 /* ---------- Адаптивность: узкие телефоны (360px и меньше) ---------- */
 @media (max-width: 360px) {
+  .auth-wrap { padding: 16px; }
   .topbar-actions .topbar-link { padding: 6px 8px; font-size: 13px; }
   .hero .stats { gap: 14px; }
   .reel-meta { gap: 10px; font-size: 12.5px; }

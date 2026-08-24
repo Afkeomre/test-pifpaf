@@ -2,11 +2,13 @@ const path = require('path');
 const fs = require('fs');
 const Database = require('better-sqlite3');
 
-const DATA_DIR = path.join(__dirname, '..', 'data');
+// Путь к базе можно переопределить переменной DB_PATH (абсолютный путь).
+// На Amvera база живёт в постоянном хранилище: DB_PATH=/data/pifpaf.db.
+const DB_FILE = process.env.DB_PATH || path.join(__dirname, '..', 'data', 'pifpaf.db');
+const DATA_DIR = path.dirname(DB_FILE);
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
-const DB_PATH = path.join(DATA_DIR, 'pifpaf.db');
-const db = new Database(DB_PATH);
+const db = new Database(DB_FILE);
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
 
